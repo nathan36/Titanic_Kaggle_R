@@ -1,32 +1,14 @@
-group <- function(string){
-    string <- c(paste(string,"H",sep=""),
-                paste(string,"A",sep=""),
-                paste(string,"D",sep=""))
+# function to add features to training or test data frames
+featureEngrg <- function(data) {
+    # assume odds < 0.5 means highly likey to determine teams with potential upset
+    data$PotUpset <- 0
+    data[which(df.train$B365H<1.5 & (data$FTR=="A"|data$FTR=="D")),"PotUpset"] <- 1
+    # take the mean of top three accurate bet odds
+    data$D.mean <- rowMeans(subset(data,
+        select = c("B365D","WHD","VCD")),na.rm=TRUE)
+    data$A.mean <- rowMeans(subset(data,
+        select = c("B365A","WHA","VCA")),na.rm=TRUE)
+    data$H.mean <- rowMeans(subset(data,
+        select = c("B365H","WHH","VCH")),na.rm=TRUE)
+    return(data)
 }
-
-sumResult <- function(str,data){
-    x <- group(str)
-    y <- as.factor(apply(data[,x],1,which.min))
-    rs <- revalue(y,c("1"="H","2"="A","3"="D"))
-    return (rs)
-}
-
-df.train$D.mean <- rowMeans(subset(df.train,
-    select = c("BWD","IWD","LBD","WHD","VCD")),na.rm=TRUE)
-df.train$A.mean <- rowMeans(subset(df.train,
-    select = c("BWA","IWA","LBA","WHA","VCA")),na.rm=TRUE)
-df.train$H.mean <- rowMeans(subset(df.train,
-    select = c("BWH","IWH","LBH","WHH","VCH")),na.rm=TRUE)
-
-# create correlation matrix
-corr.matrix = cor(subset(df.train, select = c("B365H","B365A","B365D","H.mean","A.mean","D.mean")), use = "pairwise.complete.obs")
-corr.matrix[is.na(corr.matrix)] = 0
-
-# data prepped for casting predications
-df.test$D.mean <- rowMeans(subset(df.test,
-    select = c("BWD","IWD","LBD","WHD","VCD")),na.rm=TRUE)
-df.test$A.mean <- rowMeans(subset(df.test,
-    select = c("BWA","IWA","LBA","WHA","VCA")),na.rm=TRUE)
-df.test$H.mean <- rowMeans(subset(df.test,
-    select = c("BWH","IWH","LBH","WHH","VCH")),na.rm=TRUE)
-

@@ -23,10 +23,6 @@ glm.tune.1 <- train(Survived ~ Sex + Class + Age + Family + Embarked,
                     trControl = cv.ctrl)
 
 # random forest
-cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
-                        summaryFunction = twoClassSummary,
-                        classProbs = TRUE)
-
 rf.grid <- data.frame(.mtry = c(2,3))
 set.seed(35)
 rf.tune <- train(Survived ~ Sex + Class + Age + Family + Embarked,
@@ -35,3 +31,10 @@ rf.tune <- train(Survived ~ Sex + Class + Age + Family + Embarked,
                  metric = "ROC",
                  tuneGrid = rf.grid,
                  trControl = cv.ctrl)
+
+# conditional inference trees
+set.seed(35)
+fit <- cforest(as.factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare +
+                                       Embarked + Title + FamilySize + FamilyID,
+                 data = train,
+                 controls=cforest_unbiased(ntree=2000, mtry=3))

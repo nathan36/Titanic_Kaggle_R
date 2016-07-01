@@ -23,7 +23,7 @@ svm.ROC <- roc(response = test.batch$FTR,
             levels = levels(test.batch$FTR))
 plot(svm.ROC, add=TRUE, col="green")
 
-ml.probs <- predict(ml.tune, test.batch, type = "prob")
+ml.probs <- data.frame(predict(ml.tune, test.batch, type = "prob"))
 ml.ROC <- roc(response=test.batch$FTR,
             predictor=ml.probs$H,
             levels=levels(test.batch$FTR))
