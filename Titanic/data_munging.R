@@ -53,16 +53,15 @@ df.train$Title <- changeTitles(df.train, c("the Countess","Ms"),"Mrs")
 df.train$Title <- changeTitles(df.train, c("Mlle","Mme"),"Miss")
 df.train$Title <- as.factor(df.train$Title)
 
-## function to add features to training or test data frames
+# function to add features to training or test data frames
 featureEngrg <- function(data) {
-  ## Revaluing Fate factor to ease assessment of confusion matrices later
+  # Revaluing Fate factor to make assessment of confusion matrices easier
   data$Survived <- revalue(data$Survived, c("1" = "Survived", "0" = "Perished"))
   # Boat.dibs attempts to capture the "women and children first"
   data$Boat.dibs <- "No"
   data$Boat.dibs[which(data$Sex == "female" | data$Age < 15)] <- "Yes"
   data$Boat.dibs <- as.factor(data$Boat.dibs)
-  # Family consolidates siblings and spouses (SibSp) plus
-  # parents and children (Parch) into one feature
+  # Collapsing siblings and spo(SibSp) into one featureuses
   data$Family <- data$SibSp + data$Parch
   # Giving the traveling class feature a new look
   data$Class <- data$Pclass

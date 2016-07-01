@@ -4,14 +4,11 @@ require(pROC)
 rf.pred <- predict(rf.tune, test.batch)
 confusionMatrix(rf.pred, test.batch$FTR)
 
-rf.pred.1 <- predict(rf.tune.1, test.batch)
-confusionMatrix(rf.pred.1, test.batch$FTR)
-
 svm.pred <- predict(svm.tune, test.batch)
 confusionMatrix(svm.pred, test.batch$FTR)
 
-svm.pred.1 <- predict(svm.tune.1, test.batch)
-confusionMatrix(svm.pred.1, test.batch$FTR)
+ml.pred <- predict(ml.tune, test.batch)
+confusionMatrix(ml.pred, test.batch$FTR)
 
 # plot the ROC curve for each model
 rf.probs <- predict(rf.tune, test.batch, type = "prob")
@@ -26,8 +23,8 @@ svm.ROC <- roc(response = test.batch$FTR,
             levels = levels(test.batch$FTR))
 plot(svm.ROC, add=TRUE, col="green")
 
-ogit.probs <- data.frame(logit.probs)
-logit.ROC <- roc(response=test.batch$FTR,
-            predictor=logit.probs$H,
+ml.probs <- predict(ml.tune, test.batch, type = "prob")
+ml.ROC <- roc(response=test.batch$FTR,
+            predictor=ml.probs$H,
             levels=levels(test.batch$FTR))
-plot(logit.ROC, add=TRUE, col="black")
+plot(ml.ROC, add=TRUE, col="black")

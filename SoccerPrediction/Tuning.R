@@ -14,14 +14,13 @@ train.batch <- df.train[training.rows, ]
 test.batch <- df.train[-training.rows, ]
 
 # multinominal logistic regression
-logit <- multinom(FTR ~ B365H_H.mean + B365A_A.mean + B365D.D.mean, train.batch)
-logit.1 <- multinom(FTR ~ B365H + B365A + B365D + H.mean + A.mean + D.mean, train.batch)
+ml.tune <- multinom(FTR ~ H.mean + A.mean + D.mean + PotUpset, train.batch)
 
 # random forest
-rf.grid <- data.frame(.mtry=c(2.3,2.4,2.5))
+rf.grid <- data.frame(.mtry=c(1.5,2,2.5))
 
 set.seed(35)
-rf.tune <- train(FTR ~ B365H + B365A + B365D + H.mean + A.mean + D.mean,
+rf.tune <- train(FTR ~ H.mean + A.mean + D.mean + PotUpset,
     data=train.batch,
     method="rf",
     metric="Mean_ROC",
@@ -30,7 +29,7 @@ rf.tune <- train(FTR ~ B365H + B365A + B365D + H.mean + A.mean + D.mean,
 
 # svm
 set.seed(35)
-svm.tune <- train(FTR ~ B365H + B365A + B365D + H.mean + A.mean + D.mean,
+svm.tune <- train(FTR ~ H.mean + A.mean + D.mean + PotUpset,
     data=train.batch,
     method="svmRadial",
     tuneLength=9,
