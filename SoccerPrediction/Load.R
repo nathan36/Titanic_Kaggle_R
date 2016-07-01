@@ -17,6 +17,9 @@ train.col.types <- rep(c('integer',    # ID
 train.data <- readData(train.path, train.col.types, missing.types)
 df.train <- as.data.frame(train.data)
 
+test.data <- readData(test.path, train.col.types[-5], missing.types)
+df.test <- as.data.frame(test.data)
+
 # remove rows with missing value
-df.tarin <- na.omit(df.train)
+df.train <- na.omit(df.train)
 
