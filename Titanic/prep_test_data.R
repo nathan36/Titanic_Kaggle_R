@@ -19,4 +19,5 @@ df.test$Fare <- imputeMedian(df.test$Fare, df.test$Pclass,
 df.test <- featureEngrg(df.test)
 
 # data prepped for predictions
-df.pred.data <- df.test[test.keeps]
+test.keeps <- train.keeps[-1]
+test <- df.test[test.keeps]

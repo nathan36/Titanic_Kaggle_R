@@ -1,13 +1,15 @@
 require(caret)
+require(party)
 
-# logistic Regression
+# data partition
 set.seed(23)
-training.rows <- createDataPartition(df.train.munged$Survived,
+training.rows <- createDataPartition(train$Survived,
                                      p = 0.8, list = FALSE)
-train.batch <- df.train.munged[training.rows, ]
-test.batch <- df.train.munged[-training.rows, ]
+train.batch <- train[training.rows, ]
+test.batch <- train[-training.rows, ]
 
-Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + Family + Embarked,
+# logistic regression
+Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + FamilySize + Embarked,
       data = train.batch, family=binomial("logit"))
 
 cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
@@ -16,7 +18,7 @@ cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
 
 # generalized liner model tuning
 set.seed(35)
-glm.tune.1 <- train(Survived ~ Sex + Class + Age + Family + Embarked,
+glm.tune.1 <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
                     data = train.batch,
                     method = "glm",
                     metric = "ROC",
@@ -25,7 +27,7 @@ glm.tune.1 <- train(Survived ~ Sex + Class + Age + Family + Embarked,
 # random forest
 rf.grid <- data.frame(.mtry = c(2,3))
 set.seed(35)
-rf.tune <- train(Survived ~ Sex + Class + Age + Family + Embarked,
+rf.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
                  data = train.batch,
                  method = "rf",
                  metric = "ROC",
@@ -34,7 +36,7 @@ rf.tune <- train(Survived ~ Sex + Class + Age + Family + Embarked,
 
 # conditional inference trees
 set.seed(35)
-fit <- cforest(as.factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare +
+fit <- cforest(as.factor(Survived) ~ Class + Sex + Age + Fare +
                                        Embarked + Title + FamilySize + FamilyID,
-                 data = train,
+                 data = train.batch,
                  controls=cforest_unbiased(ntree=2000, mtry=3))
