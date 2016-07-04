@@ -8,13 +8,14 @@ training.rows <- createDataPartition(train$Survived,
 train.batch <- train[training.rows, ]
 test.batch <- train[-training.rows, ]
 
-# logistic regression
-Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + FamilySize + Embarked,
-      data = train.batch, family=binomial("logit"))
-
+# 3 fold cross validation
 cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
                         summaryFunction = twoClassSummary,
                         classProbs = TRUE)
+
+# logistic regression
+Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + FamilySize + Embarked,
+      data = train.batch, family=binomial("logit"))
 
 # generalized liner model tuning
 set.seed(35)

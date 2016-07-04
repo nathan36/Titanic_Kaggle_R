@@ -2,6 +2,7 @@ require(plyr)
 require(stringr)
 require(Hmisc)
 
+# function for extracting title for name
 getTitle <- function(data) {
   title.dot.start <- regexpr("\\,[A-Z ]{1,20}\\.", data$Name, TRUE)
   title.comma.end <- title.dot.start+
@@ -9,9 +10,6 @@ getTitle <- function(data) {
   data$Title <- substr(data$Name, title.dot.start+2, title.comma.end-1)
   return (data$Title)
 }
-
-df.train$Title <- getTitle(df.train)
-unique(df.train$Title)
 
 # function for replacing missing values in features
 imputeMedian <- function(impute.var, filter.var, var.levels) {
@@ -22,18 +20,23 @@ imputeMedian <- function(impute.var, filter.var, var.levels) {
     return(impute.var)
 }
 
+# combine test and train data
+df.test$Survived <- NA
+combine <- rbind(df.train, df.test)
+combine$Title <- getTitle(combine)
+
 # replace missing values in Age with median age on a per-title basis
-titles.na.train <- c("Dr", "Master", "Mr", "Mrs", "Miss")
-df.train$Age <- imputeMedian(df.train$Age, df.train$Title,
-                             titles.na.train)
+titles.na <- c("Dr", "Master", "Mr", "Mrs", "Miss")
+combine$Age <- imputeMedian(combine$Age, combine$Title,
+                             titles.na)
 
 # replace missing values in Embarked with most common value
-df.train$Embarked[which(is.na(df.train$Embarked))]<-'S'
+combine$Embarked[which(is.na(combine$Embarked))]<-'S'
 
 # replace missing values in Fare with median fare by Pclass
-df.train$Fare[ which( df.train$Fare == 0 )] <- NA
-df.train$Fare <- imputeMedian(df.train$Fare, df.train$Pclass,
-                              as.numeric(levels(df.train$Pclass)))
+combine$Fare[ which( combine$Fare == 0 )] <- NA
+combine$Fare <- imputeMedian(combine$Fare, combine$Pclass,
+                              as.numeric(levels(combine$Pclass)))
 
 # function for assigning new title value to old title
 changeTitles <- function(data, old.titles, new.title) {
@@ -44,25 +47,32 @@ changeTitles <- function(data, old.titles, new.title) {
 }
 
 # Title consolidation
-df.train$Title <- changeTitles(df.train,
+combine$Title <- changeTitles(combine,
                                c("Capt","Col","Don","Dr",
                                "Jonkheer","Lady","Major",
                                "Rev","Sir"),
                                "Noble")
-df.train$Title <- changeTitles(df.train, c("the Countess","Ms"),"Mrs")
-df.train$Title <- changeTitles(df.train, c("Mlle","Mme"),"Miss")
-df.train$Title <- as.factor(df.train$Title)
+combine$Title <- changeTitles(combine, c("the Countess","Ms"),"Mrs")
+combine$Title <- changeTitles(combine, c("Mlle","Mme"),"Miss")
+combine$Title <- as.factor(combine$Title)
 
 # function to add features to training or test data frames
 featureEngrg <- function(data) {
-  # Revaluing Fate factor to make assessment of confusion matrices easier
-  data$Survived <- revalue(data$Survived, c("1" = "Survived", "0" = "Perished"))
   # Boat.dibs attempts to capture the "women and children first"
   data$Boat.dibs <- "No"
   data$Boat.dibs[which(data$Sex == "female" | data$Age < 15)] <- "Yes"
   data$Boat.dibs <- as.factor(data$Boat.dibs)
   # Collapsing siblings and spo(SibSp) into one featureuses
-  data$Family <- data$SibSp + data$Parch
+  data$FamilySize <- data$SibSp + data$Parch + 1
+  # Group related family by surname
+  data$Surname <- sapply(data$Name,
+                FUN=function(x) {strsplit(x, split='[,.]')[[1]][1]})
+  data$FamilyID <- paste(as.character(data$FamilySize), data$Surname, sep="")
+  data$FamilyID[data$FamilySize <= 2] <- 'Small'
+  famIDs <- data.frame(table(data$FamilyID))
+  famIDs <- famIDs[famIDs$Freq <= 2,]
+  data$FamilyID[data$FamilyID %in% famIDs$Var1] <- 'Small'
+  data$FamilyID <- factor(data$FamilyID)
   # Giving the traveling class feature a new look
   data$Class <- data$Pclass
   data$Class <- revalue(data$Class,
@@ -71,9 +81,12 @@ featureEngrg <- function(data) {
 }
 
 ## add remaining features to training data frame
-df.train <- featureEngrg(df.train)
+combine <- featureEngrg(combine)
 
-train.keeps <- c("Fate", "Sex", "Boat.dibs", "Age", "Title",
-                 "Class", "Deck", "Side", "Fare", "Fare.pp",
-                 "Embarked", "Family")
-df.train.munged <- df.train[train.keeps]
+col.keeps <- c("Survived", "Sex", "Boat.dibs", "Age", "Title",
+                 "Class", "Fare", "Embarked", "FamilySize", "FamilyID")
+combine <- combine[col.keeps]
+
+# split
+train <- combine[1:891,]
+test <- combine[892:1309,]
