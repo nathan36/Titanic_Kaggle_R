@@ -58,6 +58,7 @@ combine$Title <- as.factor(combine$Title)
 
 # function to add features to training or test data frames
 featureEngrg <- function(data) {
+  data$Survived <- revalue(data$Survived, c("1"="Survived","0"="Perished"))
   # Boat.dibs attempts to capture the "women and children first"
   data$Boat.dibs <- "No"
   data$Boat.dibs[which(data$Sex == "female" | data$Age < 15)] <- "Yes"
@@ -87,6 +88,6 @@ col.keeps <- c("Survived", "Sex", "Boat.dibs", "Age", "Title",
                  "Class", "Fare", "Embarked", "FamilySize", "FamilyID")
 combine <- combine[col.keeps]
 
-# split
+# split train and test data
 train <- combine[1:891,]
 test <- combine[892:1309,]

@@ -38,16 +38,3 @@ svm.tune <- train(FTR ~ H.mean + A.mean + D.mean + PotUpset,
     trControl=cv.ctrl)
 
 
-# # ada boosting
-# ada.grid <- expand.grid(.iter = c(50, 100),
-#                         .maxdepth = c(4, 8),
-#                         .nu = c(0.1, 1))
-#
-# set.seed(35)
-# ada.tune <- train(FTR ~ B365H + B365A + B365D + H.mean + A.mean + D.mean,
-#     data=train.batch,
-#     method="ada",
-#     metric="Mean_ROC",
-#     tuneGrid=ada.grid,
-#     trControl=cv.ctrl)
-
