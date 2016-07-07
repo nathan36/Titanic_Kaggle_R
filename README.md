@@ -33,49 +33,10 @@ How to use it
 -------------
 
 After installing R just run:
-
-    generate_kaggle_submission.py samr/data/model2.json > submission.csv
-
-And that will generate a Kaggle submission file that scores near `0.65844` on the
-[leaderboard](http://www.kaggle.com/c/sentiment-analysis-on-movie-reviews/leaderboard)
-(should take 3 minutes, and as of 2014-07-22 that score is the 2nd place).
-
-The `model2.json` argument above is a configuration file for `samr` that
-determines how the `scikit-learn` pipeline is going to be built and other
-hyperparameters, here is how it looks:
-
-    {
-     "classifier":"randomforest",
-     "classifier_args":{"n_estimators": 100, "min_samples_leaf":10, "n_jobs":-1},
-     "lowercase":"true",
-     "map_to_synsets":"true",
-     "map_to_lex":"true",
-     "duplicates":"true"
-    }
-
-You can try `samr` with different configuration files you make (as long as the
-options are implemented), yielding
-different scores and perhaps even better scores.
-
-### Just tell me how it works
-
-In particular `model2.json` feeds a [random forest classifier](http://en.wikipedia.org/wiki/Random_forest)
-with a concatenation of 3 kinds of features:
-
- - The [decision functions](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier.decision_function)
-   of set of vanilla SGDClassifiers trained in a one-versus-others scheme using
-   [bag-of-words](http://en.wikipedia.org/wiki/Bag-of-words_model) as features.
-   It's classifier inside a classifier, [yo dawg!](http://i.imgur.com/aueqLyL.png)
- - The decision functions of set of vanilla SGDClassifiers trained in a one-versus-others scheme using bag-of-words
-   on the [wordnet](http://wordnetweb.princeton.edu/perl/webwn?s=bank) synsets of the words in a phrase.
- - The amount of "positive" and "negative" words in a phrase as dictated by
-   the [Harvard Inquirer sentiment lexicon](http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm)
-
-During prediction, it also checks for duplicates between the training set and
-the train set (there are quite a few).
-
-And that's it! Want more details? see the code! it's only 350 lines.
-
+   1. Load.R
+   2. Data_munging.R
+   3. Model_training.R
+   4. Result.R
 
 Installation
 ------------
