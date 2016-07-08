@@ -1,15 +1,10 @@
 Kaggle Data Competition
 ===================================
 
-This is an entry to [Kaggle](http://www.kaggle.com/)'s
+This is an entry to [Kaggle](https://www.kaggle.com/c/titanic)'s
 Titanic: Machine Learning from Disaster competition.
 
 It's written for R 
-
-Problem description
------------------
-
-[description page](https://www.kaggle.com/c/titanic):
 
 How to use it
 -------------
