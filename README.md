@@ -1,17 +1,15 @@
-Kaggle data competition
+Kaggle Data Competition
 ===================================
 
 This is an entry to [Kaggle](http://www.kaggle.com/)'s
-[Sentiment Analysis on Movie Reviews](http://www.kaggle.com/c/sentiment-analysis-on-movie-reviews) (SAMR)
-competition.
+Titanic: Machine Learning from Disaster competition.
 
 It's written for R 
 
 Problem description
 -----------------
 
-Quoting from Kaggle's [description page](http://www.kaggle.com/c/sentiment-analysis-on-movie-reviews):
-
+[description page](https://www.kaggle.com/c/titanic):
 
 How to use it
 -------------
