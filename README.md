@@ -1,8 +1,8 @@
 Kaggle Data Competition
 ===================================
 
-This is an entry to [Kaggle](https://www.kaggle.com/c/titanic)'s
-Titanic: Machine Learning from Disaster competition.
+This is an entry to Kaggle's
+[Titanic: Machine Learning from Disaster competition](https://www.kaggle.com/c/titanic)
 
 It's written for R 
 
@@ -18,6 +18,6 @@ After installing R just run:
 Installation
 ------------
 
-      git clone https://github.com/nathan36/Titanic_K
+      git clone https://github.com/nathan36/Titanic_K.git
 
 
