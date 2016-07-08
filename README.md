@@ -18,6 +18,6 @@ After installing R just run:
 Installation
 ------------
 
-    git clone https://github.com/nathanli36/R-Programming.git
+    git clone https://github.com/nathan36/Titanic_K
 
 
