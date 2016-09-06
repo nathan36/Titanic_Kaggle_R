@@ -4,8 +4,9 @@ require(Hmisc)
 
 # function for extracting title for name
 getTitle <- function(data) {
-  data$Title <- strsplit(data$Name, split=" ")
-  data$Title <- sapply(data$Title,"[[",2)
+  title.dot.start <- regexpr("\\,[A-Z ]{1,20}\\.", data$Name, TRUE)
+  title.comma.end <- title.dot.start + attr(title.dot.start, "match.length")-1
+  data$Title <- substr(data$Name, title.dot.start+2, title.comma.end-1)
   return (data$Title)
 }
 
