@@ -1,3 +1,31 @@
+readData <- function(file.path, column.types, missing.types) {
+    read.csv(file=file.path, colClasses=column.types, na.strings=missing.types)
+}
+train.data.path <- "data/train.csv"
+test.data.path <- "data/test.csv"
+missing.types <- c("NA", "")
+train.col.types <- c('integer',     # PassengerId
+                     'factor',      # Survived
+                     'factor',      # Pclass
+                     'character',   # Name
+                     'factor',      # Sex
+                     'numeric',     # Age
+                     'integer',     # SibSp
+                     'integer',     # Parch
+                     'character',   # Ticket
+                     'numeric',     # Fare
+                     'character',   # Cabin
+                     'factor'       # Embarked
+)
+test.col.types <- train.col.types[-2]
+
+train.data <- readData(train.data.path, train.col.types, missing.types)
+df.train <- train.data
+
+test.data <- readData(test.data.path, test.col.types, missing.types)
+df.test <- test.data
+#--------------------------------------------------------------------------
+
 require(plyr)
 require(stringr)
 require(Hmisc)
@@ -90,3 +118,47 @@ combine <- combine[col.keeps]
 # split train and test data
 train <- combine[1:891,]
 test <- combine[892:1309,]
+
+
+# data partition
+require(RSNNS)
+require(caret)
+require(neuralnet)
+
+set.seed(23)
+training.rows <- createDataPartition(train$Survived,
+                                     p = 0.8, list = FALSE)
+train.batch <- train[training.rows, ]
+test.batch <- train[-training.rows, ]
+
+# convert to dummy variables
+train.batch.m <- model.matrix(~Survived+Sex+Boat.dibs+Age+Title+Class+Fare+Embarked+FamilySize, 
+                    data=train.batch)
+test.batch.m <- model.matrix(~Survived+Sex+Boat.dibs+Age+Title+Class+Fare+Embarked+FamilySize, 
+                    data=test.batch)
+test.m <- model.matrix(~Sex+Boat.dibs+Age+Title+Class+Fare+Embarked+FamilySize, 
+                    data=test)
+
+# train neural network
+nn <- neuralnet(SurvivedSurvived~Sexmale+Boat.dibsYes+Age+TitleMiss+TitleMr+TitleMrs+TitleNoble
+                    +ClassSecond+ClassThird+Fare+EmbarkedQ+EmbarkedS+FamilySize,
+                data=train.batch.m, 
+                hidden=2, 
+                linear.output=FALSE)
+
+# predict survivial
+Survived <- round(compute(nn, test.m[,-1])$net.result)
+
+# --------- working on rsnns mlp model ------------
+# require(RSNNS)
+# train.input <- as.matrix(train.batch[,-1])
+# train.target <- as.matrix(train.batch[,1])
+# test.input <- as.matrix(test.batch[,-1])
+# test.target <- as.matrix(test.batch[,1])
+# mlp.tune <- mlp(train.input, train.target)
+
+# output result to csv
+prediction <- data.frame(Survived)
+prediction$PassengerId <- df.test$PassengerId
+write.csv(prediction[,c("PassengerId","Survived")],
+    file="Titanic_result.csv",row.names=FALSE)

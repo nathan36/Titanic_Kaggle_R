@@ -2,8 +2,8 @@ readData <- function(file.path, column.types, missing.types) {
     read.csv(file=file.path, colClasses=column.types, na.strings=missing.types)
 }
 
-train.data.path <- "titanic/data/train.csv"
-test.data.path <- "titanic/data/test.csv"
+train.data.path <- "data/train.csv"
+test.data.path <- "data/test.csv"
 missing.types <- c("NA", "")
 train.col.types <- c('integer',     # PassengerId
                      'factor',      # Survived

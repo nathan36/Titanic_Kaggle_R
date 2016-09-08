@@ -1,0 +1,6 @@
+install.packages("Hmisc")
+install.packages("caret")
+install.packages("party")
+install.packages("RSNNS")
+install.packages("stringr")
+install.packages("plyr")
