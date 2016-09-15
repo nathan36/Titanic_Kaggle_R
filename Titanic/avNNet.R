@@ -1,5 +1,8 @@
 require(doParallel)
+
 cl <- makeCluster(detectCores()-1)
 registerDoParallel(cl)
-nn.fit <- avNNet(formula=fm, data=train.batch.m, size=8)
+
+nn <- avNNet(formula=fm, data=train.batch.m, size=8)
+
 stopCluster(cl)

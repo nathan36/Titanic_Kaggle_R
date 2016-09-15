@@ -29,22 +29,14 @@ title <- paste(colnames(test.m)[-1], collapse = "+")
 f <- paste("SurvivedSurvived", title, sep="~")
 
 # train neural network
-fit.nn <- neuralnet(f, data=train.batch.m, hidden=c(5,3), stepmax=1e+09, linear.output=FALSE)
+nn.tune <- neuralnet(f, data=train.batch.m, hidden=c(5,3), stepmax=1e+09, linear.output=FALSE)
 
-# # predict survivial
-# Survived <- round(compute(nn, test.m[,-1])$net.result)
-# 
-# # output result to csv
-# prediction <- data.frame(Survived)
-# prediction$PassengerId <- df.test$PassengerId
-# write.csv(prediction[,c("PassengerId","Survived")],
-#     file="Titanic_result.csv",row.names=FALSE)
+# predict survivial
+Survived <- round(compute(nn.tune, test.m[,-1])$net.result)
+
+# output result to csv
+prediction <- data.frame(Survived)
+prediction$PassengerId <- df.test$PassengerId
+write.csv(prediction[,c("PassengerId","Survived")],
+    file="Titanic_result.csv",row.names=FALSE)
     
-# --------- incomplete rsnns mlp model ------------
-# require(RSNNS)
-# train.input <- as.matrix(train.batch[,-1])
-# train.target <- as.matrix(train.batch[,1])
-# test.input <- as.matrix(test.batch[,-1])
-# test.target <- as.matrix(test.batch[,1])
-# mlp.tune <- mlp(train.input, train.target)
-
