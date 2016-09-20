@@ -33,7 +33,5 @@ for (i in 1:k){
     pbar$step()
 }
 
-png("SSE Graph.png")
 plot(c(1:10), cv.error, type="n", xlab='SSE CV')
 lines(c(1:10), cv.error)
-dev.off()

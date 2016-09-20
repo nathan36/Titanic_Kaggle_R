@@ -2,13 +2,6 @@ require(RSNNS)
 require(caret)
 require(neuralnet)
 
-# data partition
-set.seed(46)
-training.rows <- createDataPartition(train$Survived,
-                                 p = 0.8, list = FALSE)
-train.batch <- train[training.rows, ]
-test.batch <- train[-training.rows, ]
-
 # standardize data
 train.batch[,c("Age","Fare")] <- scale(train.batch[,c("Age","Fare")])
 test.batch[,c("Age","Fare")] <- scale(test.batch[,c("Age","Fare")])
@@ -31,12 +24,12 @@ f <- paste("SurvivedSurvived", title, sep="~")
 # train neural network
 nn.tune <- neuralnet(f, data=train.batch.m, hidden=c(5,3), stepmax=1e+09, linear.output=FALSE)
 
-# predict survivial
+# output result to csv
 Survived <- round(compute(nn.tune, test.m[,-1])$net.result)
 
-# output result to csv
 prediction <- data.frame(Survived)
 prediction$PassengerId <- df.test$PassengerId
+
 write.csv(prediction[,c("PassengerId","Survived")],
-    file="Titanic_result.csv",row.names=FALSE)
+    file="nn.csv",row.names=FALSE)
     
