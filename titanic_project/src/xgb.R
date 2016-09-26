@@ -26,9 +26,13 @@ xgb.tune <- train(Survived ~.,
                   metric = "ROC"
 )
 
-Survived <- predict(xgb.tune, test)
+xgb.yhat <- predict(xgb.tune, test.batch)
+
+Survived <- predict(xgb.tune, test.set)
 predictions <- data.frame(Survived)
 predictions$Survived <- revalue(predictions$Survived, c("Survived"="1","Perished"="0"))
-predictions$PassengerId <- df.test$PassengerId
-write.csv(predictions[,c("PassengerId","Survived")],
-          file="xgb.csv",row.names=FALSE)
+xgb.y <- predictions$Survived
+
+# predictions$PassengerId <- test$PassengerId
+# write.csv(predictions[,c("PassengerId","Survived")],
+#           file="xgb.csv",row.names=FALSE)

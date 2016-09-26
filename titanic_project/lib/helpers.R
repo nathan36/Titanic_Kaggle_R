@@ -67,3 +67,18 @@ roc.prep <- function(roc.obj){
   roc.obj <- data.frame(sens=predict(roc.obj), spec=roc.copy$specificities)
   return(roc.obj)
 }
+
+# function for scaling, coverting to dummy varible and creating unique names
+prepSet4nn <- function(data, test=F){
+  data[,c("Age","Fare")] <- scale(data[,c("Age","Fare")])
+  
+  if(test){
+    data <- model.matrix(~., data[,!(colnames(data) %in% c("Survived"))])
+  } else {
+    x <- ncol(data)
+    data <- model.matrix(~., data[,1:x]) 
+  }
+  
+  colnames(data) <- make.names(colnames(data), unique=T)
+  return(data)
+} 

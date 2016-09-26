@@ -15,15 +15,19 @@ Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + FamilySize + Embarked,
 # generalized liner model tuning
 set.seed(35)
 
-glm.tune.1 <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
+glm.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
                     data = train.batch,
                     method = "glm",
                     metric = "ROC",
                     trControl = cv.ctrl)
 
-Survived <- predict(glm.tune.1, test.set)
+glm.yhat <- predict(glm.tune, test.batch)
+
+Survived <- predict(glm.tune, test.set)
 predictions <- data.frame(Survived)
 predictions$Survived <- revalue(predictions$Survived, c("Survived"="1","Perished"="0"))
-predictions$PassengerId <- test$PassengerId
-write.csv(predictions[,c("PassengerId","Survived")],
-          file="reports/glm.csv",row.names=FALSE)
+glm.y <- predictions$Survived
+
+# predictions$PassengerId <- test$PassengerId
+# write.csv(predictions[,c("PassengerId","Survived")],
+#           file="reports/glm.csv",row.names=FALSE)

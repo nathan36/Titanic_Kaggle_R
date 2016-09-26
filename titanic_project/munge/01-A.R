@@ -6,7 +6,12 @@ require(caret)
 
 train$Survived <- as.factor(train$Survived)
 train$Pclass <- as.factor(train$Pclass)
+train$Sex <- as.factor(train$Sex)
+train$Embarked <- as.factor(train$Embarked)
+
 test$Pclass <- as.factor(test$Pclass)
+test$Sex <- as.factor(test$Sex)
+test$Embarked <- as.factor(test$Embarked)
 
 cache('train')
 cache('test')
