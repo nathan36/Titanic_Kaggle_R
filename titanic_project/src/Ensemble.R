@@ -1,29 +1,36 @@
-# library('ProjectTemplate'); load.project()
-require(doParallel)
+ library('ProjectTemplate'); load.project()
 
-L1Feature.set <- data.frame(glm.yhat, cforest.yhat, nn.yhat, 
-                            rf.yhat, xgb.yhat, y=test.batch$Survived)
+L1Train.set <- data.frame(glm.yhat, cforest.yhat, nn.yhat, 
+                            rf.yhat, xgb.yhat, y=train.set$Survived)
 
-for(i in 1:ncol(L1Feature.set)){
-  x <- colnames(L1Feature.set)[i]
-  L1Feature.set[,i] <- revalue(L1Feature.set$x, c("Perished"="0","Survived"="1"))
-}
+L1Train.set$nn.yhat <- as.factor(L1Train.set$nn.yhat)
+L1Train.set$nn.yhat  <- revalue(L1Train.set$nn.yhat, 
+                                c("0"="Perished","1"="Survived"))
 
 #L1Feature.set <- sapply(L1Feature.set, function(x) revalue(L1Feature.set, c("Survived"=1, "Perished"=0)))
 
 L1Test.set <- data.frame(glm.yhat=glm.y, cforest.yhat=cforest.y,
                          nn.yhat=as.factor(nn.y), rf.yhat=rf.y, xgb.yhat=xgb.y)
 
-cl <- makeCluster(detectCores()-1)
-registerDoParallel(cl)
+for(i in 1:ncol(L1Test.set)){
+  L1Test.set[,i] <- revalue(L1Test.set[,i], c("0"="Perished","1"="Survived"))
+}
 
-avNN.tune <- avNNet(y ~ ., data=L1Feature.set, size=8)
+cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
+                        summaryFunction = twoClassSummary,
+                        classProbs = TRUE)
 
-stopCluster(cl)
-registerDoSEQ()
+L1nn.tune <- train(y~., data=L1Train.set,
+                   metric="ROC",
+                   method="nnet",
+                   tuneGrid=data.frame(size=8, decay=0),
+                   trControl=cv.ctrl
+)
 
-Survived <- predict(avNN.tune, L1Test.set, type="class")
+Survived <- predict(L1nn.tune, L1Test.set, type="raw")
 predictions <- data.frame(Survived)
+predictions$Survived <- revalue(predictions$Survived, 
+                                c("Perished"="0","Survived"="1"))
 predictions$PassengerId <- test$PassengerId
 write.csv(predictions[,c("PassengerId","Survived")],
           file="result.csv", row.names=F)

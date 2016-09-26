@@ -26,7 +26,7 @@ xgb.tune <- train(Survived ~.,
                   metric = "ROC"
 )
 
-xgb.yhat <- predict(xgb.tune, test.batch)
+xgb.yhat <- predict(xgb.tune, train.set)
 
 Survived <- predict(xgb.tune, test.set)
 predictions <- data.frame(Survived)

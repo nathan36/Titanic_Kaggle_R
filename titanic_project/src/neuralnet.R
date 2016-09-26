@@ -1,6 +1,5 @@
 library('ProjectTemplate'); load.project()
 
-require(RSNNS)
 require(caret)
 require(neuralnet)
 
@@ -17,7 +16,7 @@ f <- paste("SurvivedSurvived", title, sep="~")
 # train neural network
 nn.tune <- neuralnet(f, data=nn.train.batch, hidden=c(5,3), stepmax=1e+09, linear.output=FALSE)
 
-nn.yhat <- round(compute(nn.tune, nn.test.batch[,-(1:2)])$net.result)
+nn.yhat <- round(compute(nn.tune, nn.train.set[,-1])$net.result)
 
 Survived <- round(compute(nn.tune, nn.test.set[,-1])$net.result)
 prediction <- data.frame(Survived)

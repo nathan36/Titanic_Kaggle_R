@@ -21,7 +21,7 @@ glm.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
                     metric = "ROC",
                     trControl = cv.ctrl)
 
-glm.yhat <- predict(glm.tune, test.batch)
+glm.yhat <- predict(glm.tune, train.set)
 
 Survived <- predict(glm.tune, test.set)
 predictions <- data.frame(Survived)

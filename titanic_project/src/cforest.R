@@ -15,7 +15,7 @@ ctree.tune <- cforest(Survived ~ Class + Sex + Age +
                       controls=cv.ctrl
 )
 
-cforest.yhat <- predict(ctree.tune, test.batch, OOB=T)
+cforest.yhat <- predict(ctree.tune, train.set, OOB=T)
 
 Survived <- predict(ctree.tune, test.set, OOB=T)
 predictions <- data.frame(Survived)

@@ -20,7 +20,7 @@ rf.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked + FamilyID
                  tuneGrid = rf.grid,
                  trControl = cv.ctrl)
 
-rf.yhat <- predict(rf.tune, test.batch)
+rf.yhat <- predict(rf.tune, train.set)
 
 Survived <- predict(rf.tune, test.set)
 predictions <- data.frame(Survived)
