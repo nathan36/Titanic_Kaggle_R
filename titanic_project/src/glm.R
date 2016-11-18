@@ -8,14 +8,10 @@ cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
                         summaryFunction = twoClassSummary,
                         classProbs = TRUE)
 
-# logistic regression
-Titanic.logit.1 <- glm(Survived ~ Sex + Class + Age + FamilySize + Embarked,
-      data = train.batch, family=binomial("logit"))
-
 # generalized liner model tuning
 set.seed(35)
 
-glm.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked,
+glm.tune <- train(Survived ~ .,
                     data = train.batch,
                     method = "glm",
                     metric = "ROC",

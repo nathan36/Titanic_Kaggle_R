@@ -4,17 +4,26 @@ require(caret)
 require(party)
 require(pROC)
 
+combine$FamilyID2 <- combine$FamilyID
+combine$FamilyID2 <- as.character(combine$FamilyID2)
+combine$FamilyID2[combine$FamilySize <= 3] <- 'Small'
+combine$FamilyID2 <- factor(combine$FamilyID2)
+combine$FamilyID <- NULL
+
+train.set <- combine[1:891,]
+test.set <- combine[892:1309,]
+
 # 3 fold cross validation
 cv.ctrl <- trainControl(method = "repeatedcv", repeats = 3,
                         summaryFunction = twoClassSummary,
                         classProbs = TRUE)
 
 # random forest
-rf.grid <- data.frame(.mtry = c(2,3))
+rf.grid <- data.frame(.mtry = c(sqrt(ncol(train.set))))
 
 set.seed(35)
-rf.tune <- train(Survived ~ Sex + Class + Age + FamilySize + Embarked + FamilyID,
-                 data = train.batch,
+rf.tune <- train(Survived ~ .,
+                 data = train.set,
                  method = "rf",
                  metric = "ROC",
                  tuneGrid = rf.grid,

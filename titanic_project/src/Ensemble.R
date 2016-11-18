@@ -1,16 +1,16 @@
  library('ProjectTemplate'); load.project()
 
-L1Train.set <- data.frame(glm.yhat, cforest.yhat, nn.yhat, 
+L1Train.set <- data.frame(glm.yhat, cforest.yhat, 
                             rf.yhat, xgb.yhat, y=train.set$Survived)
 
-L1Train.set$nn.yhat <- as.factor(L1Train.set$nn.yhat)
-L1Train.set$nn.yhat  <- revalue(L1Train.set$nn.yhat, 
-                                c("0"="Perished","1"="Survived"))
+# L1Train.set$nn.yhat <- as.factor(L1Train.set$nn.yhat)
+# L1Train.set$nn.yhat  <- revalue(L1Train.set$nn.yhat, 
+#                                 c("0"="Perished","1"="Survived"))
 
-#L1Feature.set <- sapply(L1Feature.set, function(x) revalue(L1Feature.set, c("Survived"=1, "Perished"=0)))
+#L1Train.set <- sapply(colnames(L1Train.set), function(x){revalue(L1Feature.set[[x]], c("Survived"=1, "Perished"=0))})
 
 L1Test.set <- data.frame(glm.yhat=glm.y, cforest.yhat=cforest.y,
-                         nn.yhat=as.factor(nn.y), rf.yhat=rf.y, xgb.yhat=xgb.y)
+                         rf.yhat=rf.y, xgb.yhat=xgb.y)
 
 for(i in 1:ncol(L1Test.set)){
   L1Test.set[,i] <- revalue(L1Test.set[,i], c("0"="Perished","1"="Survived"))
@@ -26,6 +26,10 @@ L1nn.tune <- train(y~., data=L1Train.set,
                    tuneGrid=data.frame(size=8, decay=0),
                    trControl=cv.ctrl
 )
+
+cv <- t(data.frame(ctree.tune$results$ROC, glm.tune$results$ROC,
+                   rf.tune$results$ROC, xgb.tune$results$ROC, 
+                   L1nn.tune$results$ROC))
 
 Survived <- predict(L1nn.tune, L1Test.set, type="raw")
 predictions <- data.frame(Survived)
